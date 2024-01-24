@@ -46,9 +46,9 @@ if (is.null(opt$coordinates_file)){
 if (is.null(opt$normalization)){
     message('Need to provide a normalization scheme with the -n/--normalization arg.')
     quit(status=1)
-} else if(opt$normalization == 'SCTransform'){
+} else if(tolower(opt$normalization) == 'sctransform'){
     norm_scheme <- 'sct'
-} else if(opt$normalization == 'log'){
+} else if(tolower(opt$normalization) == 'log'){
     norm_scheme <- 'log'
 } else {
     message('We only accept `log` or `SCTransform` for the normalization scheme.')

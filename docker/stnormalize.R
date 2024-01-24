@@ -20,7 +20,7 @@ option_list <- list(
     ),
     make_option(
         c('-n', '--normalization'),
-        help='Normalization method of `log` or `sct`'
+        help='Normalization method of `log` or `SCTransform`'
     ),
     make_option(
         c('-o','--output_file_prefix'),
@@ -42,8 +42,16 @@ if (is.null(opt$coordinates_file)){
     quit(status=1)
 }
 
-if (is.null(opt$output_file_prefix)) {
-    message('Need to provide the prefix for the output file with the -o arg.')
+# transform the name of the normalization scheme:
+if (is.null(opt$normalization)){
+    message('Need to provide a normalization scheme with the -n/--normalization arg.')
+    quit(status=1)
+} else if(opt$normalization == 'SCTransform'){
+    norm_scheme <- 'sct'
+} else if(opt$normalization == 'log'){
+    norm_scheme <- 'log'
+} else {
+    message('We only accept `log` or `SCTransform` for the normalization scheme.')
     quit(status=1)
 }
 
@@ -84,7 +92,7 @@ spat <- STlist(
 )
 
 # Transform the data
-spat <- transform_data(spat, method=opt$normalization)
+spat <- transform_data(spat, method=norm_scheme)
 
 
 # Export of the normalized data to full matrix flat file
@@ -97,7 +105,11 @@ df <- data.frame(
 remapped_cols = colname_mapping[colnames(df), 'orig_names']
 colnames(df) = remapped_cols
 
-output_filename <- sprintf('%s/%s.spatialge_normalized.%s.tsv', working_dir, opt$output_file_prefix, opt$normalization)
+if (is.null(opt$output_file_prefix)) {
+    output_filename <- sprintf('%s/%s.spatialge_normalized.%s.tsv', working_dir, opt$sample_name, opt$normalization)
+} else {
+    output_filename <- sprintf('%s/%s.%s.spatialge_normalized.%s.tsv', working_dir, opt$sample_name, opt$output_file_prefix, opt$normalization)
+}
 write.table(
     df,
     file=output_filename,

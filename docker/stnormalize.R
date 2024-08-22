@@ -2,6 +2,9 @@ suppressMessages(suppressWarnings(library('spatialGE')))
 suppressMessages(suppressWarnings(library('optparse')))
 source('/usr/local/bin/prep_stlist.R')
 
+# increase this if getting recurring errors related to 'globals export'
+options(future.globals.maxSize = 1000 * 1024^2)  # size in bytes
+
 # args from command line:
 args <- commandArgs(TRUE)
 
